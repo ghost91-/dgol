@@ -1,0 +1,10 @@
+{
+    "name": "dgol",
+    "description": "An implementation of Conway's Game of Life in D",
+    "copyright": "Copyright © 2015, Johannes Loher",
+    "homepage": "http://www.johannesloher.com",
+    "authors": ["Johannes Loher"],
+    "dependencies": {
+        "ncurses": "~master"
+    }
+}
