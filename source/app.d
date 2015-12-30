@@ -1,20 +1,20 @@
 import window;
-import std.random;
-import std.conv;
-import std.algorithm;
-import std.range;
-import std.string;
-import core.thread;
+import std.random : uniform;
+import std.conv : to;
+import std.algorithm : map, sum;
+import std.range : enumerate;
+import std.string : format;
+import core.thread : Thread, dur;
 
 auto createRandomPopulation(uint y, uint x)
 {
     static struct rangeResult
     {
     private:
-        uint[][] cells;
+        bool[][] cells;
         uint y, x;
 
-        uint isCellAlive(int y, int x)
+        bool isCellAlive(int y, int x)
         {
             if (y < 0 || y >= cells.length || x < 0 || x >= cells[0].length)
                 return 0;
@@ -33,12 +33,12 @@ auto createRandomPopulation(uint y, uint x)
 
             foreach (uint i, ref row; cells)
                 foreach (uint j, ref cell; row)
-                    cell = uniform(0, 2);
+                    cell = uniform(0, 2).to!bool;
         }
 
         immutable bool empty = false;
 
-        uint[][] front() @property pure @nogc nothrow
+        bool[][] front() @property pure @nogc nothrow
         {
             assert(!empty);
             return cells;
@@ -93,19 +93,21 @@ void main()
     }
 }
 
-void print(uint[][] cells)
+void print(bool[][] cells)
 {
     foreach (uint i, row; cells)
         foreach (uint j, cell; row)
         {
-            if (cell == 1)
+            if (cell)
+            {
                 try
-            {
-                mainWindow.movePrint(i + 1, j, "x");
-            }
-            catch (cursorOutOfWindowException e)
-            {
+                {
+                    mainWindow.movePrint(i + 1, j, "x");
+                }
+                catch (cursorOutOfWindowException e)
+                {
 
+                }
             }
         }
     mainWindow.update();
