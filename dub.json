@@ -4,6 +4,7 @@
     "copyright": "Copyright © 2015, Johannes Loher",
     "homepage": "http://www.johannesloher.com",
     "authors": ["Johannes Loher"],
+    "license": "GPL-2.0",
     "dependencies": {
         "ncurses": "~master"
     }
