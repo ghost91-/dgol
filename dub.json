@@ -2,7 +2,7 @@
     "name": "dgol",
     "description": "An implementation of Conway's Game of Life in D",
     "copyright": "Copyright © 2015, Johannes Loher",
-    "homepage": "http://www.johannesloher.com",
+    "homepage": "https://github.com/ghost91-/dgol",
     "authors": ["Johannes Loher"],
     "license": "GPL-2.0",
     "dependencies": {
