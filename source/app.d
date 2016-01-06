@@ -6,6 +6,13 @@ import std.range : enumerate;
 import std.string : format;
 import core.thread : Thread, dur;
 
+size_t mod(ptrdiff_t x, size_t n)
+{
+    while (x < 0)
+        x += n;
+    return x % n;
+}
+
 auto createRandomPopulation(uint y, uint x)
 {
     static struct rangeResult
@@ -13,14 +20,6 @@ auto createRandomPopulation(uint y, uint x)
     private:
         bool[][] cells;
         uint y, x;
-
-        bool isCellAlive(int y, int x)
-        {
-            if (y < 0 || y >= cells.length || x < 0 || x >= cells[0].length)
-                return 0;
-            else
-                return cells[y][x];
-        }
 
     public:
         this(uint y, uint x)
@@ -48,6 +47,7 @@ auto createRandomPopulation(uint y, uint x)
         {
             assert(!empty);
             int[][] neighbours;
+            uint numberOfNeighboursAlive;
             auto newCells = cells.dup;
             foreach (ref row; newCells)
                 row = row.dup;
@@ -57,8 +57,8 @@ auto createRandomPopulation(uint y, uint x)
                 {
                     neighbours = [[i - 1, j - 1], [i - 1, j], [i - 1, j + 1], [i,
                         j - 1], [i, j + 1], [i + 1, j - 1], [i + 1, j], [i + 1, j + 1]];
-                    uint numberOfNeighboursAlive = neighbours.map!(
-                        neighbour => isCellAlive(neighbour[0], neighbour[1])).sum();
+                    numberOfNeighboursAlive = neighbours.map!(
+                        neighbour => cells[neighbour[0].mod(y)][neighbour[1].mod(x)]).sum();
                     switch (numberOfNeighboursAlive)
                     {
                     case 2:
@@ -89,13 +89,14 @@ void main()
         a.value.print();
         mainWindow.movePrint(0, 0, "Generation %s".format(a.index));
         mainWindow.update();
-        Thread.sleep(dur!("msecs")(50));
+        Thread.sleep(dur!("msecs")(20));
     }
 }
 
 void print(bool[][] cells)
 {
     foreach (uint i, row; cells)
+    {
         foreach (uint j, cell; row)
         {
             if (cell)
@@ -110,5 +111,5 @@ void print(bool[][] cells)
                 }
             }
         }
-    mainWindow.update();
+    }
 }
