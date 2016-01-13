@@ -6,19 +6,19 @@ import std.range : enumerate;
 import std.string : format;
 import core.thread : Thread, dur;
 
-size_t mod(ptrdiff_t x, size_t n)
+size_t mod(ptrdiff_t x, in size_t n) @nogc nothrow pure
 {
     while (x < 0)
         x += n;
     return x % n;
 }
 
-auto createRandomPopulation(uint y, uint x)
+auto createRandomPopulation(in uint y, in uint x)
 {
     static struct rangeResult
     {
     private:
-        bool[][] cells;
+        bool[][] population;
         uint y, x;
 
     public:
@@ -26,11 +26,11 @@ auto createRandomPopulation(uint y, uint x)
         {
             this.y = y;
             this.x = x;
-            cells.length = y;
-            foreach (ref row; cells)
+            population.length = y;
+            foreach (ref row; population)
                 row.length = x;
 
-            foreach (uint i, ref row; cells)
+            foreach (uint i, ref row; population)
                 foreach (uint j, ref cell; row)
                     cell = uniform(0, 2).to!bool;
         }
@@ -40,7 +40,7 @@ auto createRandomPopulation(uint y, uint x)
         bool[][] front() @property pure @nogc nothrow
         {
             assert(!empty);
-            return cells;
+            return population;
         }
 
         void popFront()
@@ -48,32 +48,32 @@ auto createRandomPopulation(uint y, uint x)
             assert(!empty);
             int[][] neighbours;
             uint numberOfNeighboursAlive;
-            auto newCells = cells.dup;
-            foreach (ref row; newCells)
+            auto newpopulation = population.dup;
+            foreach (ref row; newpopulation)
                 row = row.dup;
-            foreach (int i, row; cells)
+            foreach (int i, row; population)
             {
                 foreach (int j, cell; row)
                 {
                     neighbours = [[i - 1, j - 1], [i - 1, j], [i - 1, j + 1], [i,
                         j - 1], [i, j + 1], [i + 1, j - 1], [i + 1, j], [i + 1, j + 1]];
                     numberOfNeighboursAlive = neighbours.map!(
-                        neighbour => cells[neighbour[0].mod(y)][neighbour[1].mod(x)]).sum();
+                        neighbour => population[neighbour[0].mod(y)][neighbour[1].mod(x)]).sum();
                     switch (numberOfNeighboursAlive)
                     {
                     case 2:
-                        newCells[i][j] = cells[i][j];
+                        newpopulation[i][j] = population[i][j];
                         break;
                     case 3:
-                        newCells[i][j] = 1;
+                        newpopulation[i][j] = 1;
                         break;
                     default:
-                        newCells[i][j] = 0;
+                        newpopulation[i][j] = 0;
                         break;
                     }
                 }
             }
-            cells = newCells;
+            population = newpopulation;
         }
     }
 
@@ -93,9 +93,9 @@ void main()
     }
 }
 
-void print(bool[][] cells)
+void print(in bool[][] population)
 {
-    foreach (uint i, row; cells)
+    foreach (uint i, row; population)
     {
         foreach (uint j, cell; row)
         {
